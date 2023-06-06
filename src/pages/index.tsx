@@ -97,8 +97,8 @@ export default function Home() {
                     </Message>
                   </Grid.Row>
                   <Grid.Row stretched>
-                    <Grid.Column stretched width='8'></Grid.Column>
-                    <Grid.Column stretched width='4' textAlign='right'>
+                    <Grid.Column stretched width='7'></Grid.Column>
+                    <Grid.Column stretched width='3' textAlign='right'>
                       <Header style={{marginTop: '8px'}}>
                         <a
                           className='lavenderLink'
@@ -109,7 +109,7 @@ export default function Home() {
                         </a>
                       </Header>
                     </Grid.Column>
-                    <Grid.Column stretched width='4'>
+                    <Grid.Column stretched width='6'>
                       <Web3TransactionModal
                         message={modalMessage}
                         setMessage={setModalMessage}
@@ -120,7 +120,6 @@ export default function Home() {
                             color='violet'
                             onClick={donate}
                           >
-                            <Icon name='gift' /> Donate{' '}
                             <Image
                               avatar
                               size='small'
@@ -128,10 +127,9 @@ export default function Home() {
                               style={{
                                 width: '24px',
                                 height: '24px',
-                                marginTop: '-5px',
-                                marginRight: '8px',
                               }}
                             />
+                            Donate
                           </Button>
                         }
                       />

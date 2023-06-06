@@ -330,7 +330,7 @@ export default function ClientStatus(props: ClientStatusProps) {
   return (
     <Card
       fluid
-      style={{paddingTop: '5%', paddingRight: '10%', paddingLeft: '10%'}}
+      style={{padding: '5%', paddingRight: '10%', paddingLeft: '10%'}}
       color={
         props.connected
           ? props.paused
@@ -357,7 +357,7 @@ export default function ClientStatus(props: ClientStatusProps) {
       </Card.Header>
 
       <Card.Description>
-        <Grid stretched>
+        <Grid stretched padded='horizontally'>
           <Grid.Row stretched>
             <Grid.Column stretched>
               <ContractStatus
