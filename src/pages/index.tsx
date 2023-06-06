@@ -65,12 +65,10 @@ export default function Home() {
   };
 
   const setup = async () => {
-    if (network) {
-      const provider = HandleProviderType(network);
-      const buyback = getTokenBuyback(network, provider);
-      setPYRO(await buyback.core());
-      setMBRS(await buyback.token());
-    }
+    const provider = HandleProviderType(network ? network : "MainNet");
+    const buyback = getTokenBuyback(network ? network : "MainNet", provider);
+    setPYRO(await buyback.core());
+    setMBRS(await buyback.token());
   };
 
   React.useEffect(() => {
