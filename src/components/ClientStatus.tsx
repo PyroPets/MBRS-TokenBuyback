@@ -374,6 +374,7 @@ export default function ClientStatus(props: ClientStatusProps) {
       window.addEventListener('message', doHandleMessage, false);
       window.postMessage({message: {type: 'CONNECT_METRIMASK'}}, '*');
     }
+    props.setup();
   }, []);
   return (
     <Card

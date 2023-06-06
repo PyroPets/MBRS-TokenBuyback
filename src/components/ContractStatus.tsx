@@ -1,8 +1,7 @@
-import {NetworkType} from '@metrixcoin/metrilib';
 import React from 'react';
 import {Grid, Header, Icon, Image} from 'semantic-ui-react';
 
-interface NetworkProps {
+interface ContractStatusProps {
   totalSupply: string;
   locked: string;
   vault: string;
@@ -14,7 +13,7 @@ interface NetworkProps {
   status: JSX.Element;
 }
 
-export default function ContractStatus(props: NetworkProps) {
+export default function ContractStatus(props: ContractStatusProps) {
   return (
     <Grid stretched>
       <Grid.Row stretched textAlign='center'>
