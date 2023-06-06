@@ -13,27 +13,9 @@ interface NetworkProps {
   onlyHodlers: boolean;
   rate: string;
   status: JSX.Element;
-  getContractStatus(): void;
-  updateContractStatus(): void;
 }
 
 export default function ContractStatus(props: NetworkProps) {
-  React.useEffect(() => {
-    props.getContractStatus();
-    let interval: NodeJS.Timer | undefined = undefined;
-    setTimeout(() => {
-      interval = setInterval(() => {
-        props.updateContractStatus();
-      }, 60 * 1000);
-    }, 60 * 1000);
-
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, []);
-
   return (
     <Grid stretched>
       <Grid.Row stretched textAlign='center'>

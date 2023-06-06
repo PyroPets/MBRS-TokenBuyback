@@ -24,7 +24,7 @@ export default function Home() {
   const [debugging, setDebugging] = React.useState(false);
   const [connected, setConnected] = React.useState(false);
   const [network, setNetwork] = React.useState(
-    'MainNet' as NetworkType | undefined
+    undefined as NetworkType | undefined
   );
   const [address, setAddress] = React.useState(undefined as string | undefined);
   const [error, setError] = React.useState(false);
@@ -75,7 +75,7 @@ export default function Home() {
 
   React.useEffect(() => {
     setup();
-  }, []);
+  }, [network]);
 
   return (
     <>

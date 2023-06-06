@@ -1,9 +1,4 @@
-import {
-  MRC20,
-  MRC721,
-  NetworkType,
-  Web3Provider,
-} from '@metrixcoin/metrilib';
+import {MRC20, MRC721, NetworkType, Web3Provider} from '@metrixcoin/metrilib';
 import {toHexAddress} from '@metrixcoin/metrilib/lib/utils/AddressUtils';
 import React from 'react';
 import {
@@ -195,7 +190,9 @@ export default function ClientStatus(props: ClientStatusProps) {
       props.setModalMessage(`Error: MBRS Amount must be greater than 0`);
       return;
     }
-    const provider = new Web3Provider(props.network ? props.network : 'MainNet');
+    const provider = new Web3Provider(
+      props.network ? props.network : 'MainNet'
+    );
     const buyback = getTokenBuyback(
       props.network ? props.network : 'MainNet',
       provider
@@ -310,6 +307,22 @@ export default function ClientStatus(props: ClientStatusProps) {
   }
 
   React.useEffect(() => {
+    getContractStatus();
+    let interval: NodeJS.Timer | undefined = undefined;
+    setTimeout(() => {
+      interval = setInterval(() => {
+        updateContractStatus();
+      }, 60 * 1000);
+    }, 60 * 1000);
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [props.network]);
+
+  React.useEffect(() => {
     if (window) {
       if (
         (window as any).metrimask &&
@@ -323,6 +336,7 @@ export default function ClientStatus(props: ClientStatusProps) {
           (window as any).metrimask.account.network as NetworkType
         );
       }
+
       window.addEventListener('message', doHandleMessage, false);
       window.postMessage({message: {type: 'CONNECT_METRIMASK'}}, '*');
     }
@@ -371,8 +385,6 @@ export default function ClientStatus(props: ClientStatusProps) {
                 paused={props.paused}
                 locked={locked}
                 onlyHodlers={props.onlyHodlers}
-                getContractStatus={getContractStatus}
-                updateContractStatus={updateContractStatus}
               />
             </Grid.Column>
           </Grid.Row>
