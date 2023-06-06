@@ -116,6 +116,9 @@ async function handleResponse(response: AxiosResponse): Promise<HttpResponse> {
       if (data[0].type === 'BigNumber') {
         data = bnToHex(BigInt(data[0]));
       }
+      if (data[0].type === 'bigint') {
+        data = bnToHex(BigInt(data[0]));
+      }
     }
     return {
       json: () => {

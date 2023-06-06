@@ -65,14 +65,14 @@ export default async function handler(
 
           if (response) {
             const r = getValues(response);
-            //console.log(r);
+            console.log(r);
             res.status(200).json(r);
           } else {
             console.log('Error: Response is undefined in Contract Call!');
             res.status(500).json('Internal Error on response!');
           }
         } catch (e) {
-          //console.log('Internal Error on Contract Call!');
+          console.log('Internal Error on Contract Call!');
           if (process.env.NODE_ENV !== 'production') {
             const err = e as Error;
             if (err.message.includes('ERC721: invalid token ID')) {
