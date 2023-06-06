@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import styles from '@/styles/Home.module.css';
 import Footer from '@/components/Footer';
-import {APIProvider, NetworkType} from '@metrixcoin/metrilib';
+import {NetworkType, Web3Provider} from '@metrixcoin/metrilib';
 import AboutMBRSX from '@/components/AboutMBRSX';
 import ClientStatus from '@/components/ClientStatus';
 import DebugContracts from '@/components/DebugContracts';
@@ -45,7 +45,7 @@ export default function Home() {
 
   const donate = async () => {
     if (network) {
-      const provider = HandleProviderType(network);
+      const provider = new Web3Provider(network);
       const buyback = getTokenBuyback(network, provider);
       const tx = await buyback.deposit();
       if (tx.txid && tx.txid != ZeroHash.replace('0x', '')) {
@@ -66,7 +66,7 @@ export default function Home() {
 
   const setup = async () => {
     if (network) {
-      const provider = new APIProvider(network);
+      const provider = HandleProviderType(network);
       const buyback = getTokenBuyback(network, provider);
       setPYRO(await buyback.core());
       setMBRS(await buyback.token());

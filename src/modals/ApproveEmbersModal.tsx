@@ -1,5 +1,4 @@
-import HandleProviderType from '@/helpers/HandleProviderType';
-import {MRC20, NetworkType} from '@metrixcoin/metrilib';
+import {MRC20, NetworkType, Web3Provider} from '@metrixcoin/metrilib';
 import {ZeroHash} from 'ethers';
 import React from 'react';
 import {
@@ -76,7 +75,7 @@ export default class ApproveEmbersModal extends React.Component<{
         '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
       );
     }
-    const provider = HandleProviderType(this.props.network);
+    const provider = new Web3Provider(this.props.network);
     const token = new MRC20(this.props.mbrs, provider);
     const tx = await token.approve(this.props.address, amt);
 

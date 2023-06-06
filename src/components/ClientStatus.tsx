@@ -2,6 +2,7 @@ import {
   MRC20,
   MRC721,
   NetworkType,
+  Web3Provider,
 } from '@metrixcoin/metrilib';
 import {toHexAddress} from '@metrixcoin/metrilib/lib/utils/AddressUtils';
 import React from 'react';
@@ -194,7 +195,7 @@ export default function ClientStatus(props: ClientStatusProps) {
       props.setModalMessage(`Error: MBRS Amount must be greater than 0`);
       return;
     }
-    const provider = HandleProviderType(props.network ? props.network : 'MainNet');
+    const provider = new Web3Provider(props.network ? props.network : 'MainNet');
     const buyback = getTokenBuyback(
       props.network ? props.network : 'MainNet',
       provider
