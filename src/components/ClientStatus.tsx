@@ -28,6 +28,7 @@ import {parseFromIntString} from '@metrixcoin/metrilib/lib/utils/NumberUtils';
 import HandleProviderType from '@/helpers/HandleProviderType';
 
 interface ClientStatusProps {
+  setup(): void;
   network: NetworkType | undefined;
   setNetwork(network: NetworkType | undefined): void;
   connected: boolean;
@@ -94,69 +95,104 @@ export default function ClientStatus(props: ClientStatusProps) {
     }
   };
 
-  const updateContractStatus = async () => {
-    if (props.network) {
-      try {
-        const provider = HandleProviderType(props.network);
-        const buyback = getTokenBuyback(props.network, provider);
-        const isActive = await buyback.active();
-        props.setActive(isActive);
-        const isPaused = await buyback.paused();
-        props.setPaused(isPaused);
-        const vaultBal = parseFromIntString(
-          (await buyback.balance()).toString(),
-          8
-        );
-        const isOnlyHodlers = await buyback.hodlers();
-        props.setOnlyHodlers(isOnlyHodlers);
-        const token = new MRC20(await buyback.token(), provider);
-        const supply = (await token.totalSupply()).toString();
-        const lockedMBRS = (await token.balanceOf(buyback.address)).toString();
-        const r = (await buyback.rate()).toString();
-        setVault(vaultBal);
-        setTotalSupply(supply);
-        setLocked(lockedMBRS);
+  const updateContractStatus = async (network: NetworkType) => {
+    try {
+      const provider = HandleProviderType(network);
+      const buyback = getTokenBuyback(network, provider);
+      const isActive = await buyback.active();
+      props.setActive(isActive);
+      const isPaused = await buyback.paused();
+      props.setPaused(isPaused);
+      const vaultBal = parseFromIntString(
+        (await buyback.balance()).toString(),
+        8
+      );
+      const isOnlyHodlers = await buyback.hodlers();
+      props.setOnlyHodlers(isOnlyHodlers);
+      const token = new MRC20(await buyback.token(), provider);
+      const supply = (await token.totalSupply()).toString();
+      const lockedMBRS = (await token.balanceOf(buyback.address)).toString();
+      const r = (await buyback.rate()).toString();
+      setVault(vaultBal);
+      setTotalSupply(supply);
+      setLocked(lockedMBRS);
 
-        setRate(r);
-        if (props.paused && isPaused) {
-          if (props.active && isActive) {
-            setStatus(
-              <Message compact color='yellow'>
-                Paused
-              </Message>
-            );
-          } else {
-            setStatus(
-              <Message compact color='yellow'>
-                Paused and Not Active
-              </Message>
-            );
-          }
+      setRate(r);
+      if (props.paused && isPaused) {
+        if (props.active && isActive) {
+          setStatus(
+            <Message compact color='yellow'>
+              Paused
+            </Message>
+          );
         } else {
-          if (props.active && isActive) {
-            setStatus(
-              <Message compact color='green'>
-                Active
-              </Message>
-            );
-          } else {
-            setStatus(
-              <Message compact color='red'>
-                Inactive
-              </Message>
-            );
-          }
+          setStatus(
+            <Message compact color='yellow'>
+              Paused and Not Active
+            </Message>
+          );
         }
-      } catch (e) {
-        console.log(e);
+      } else {
+        if (props.active && isActive) {
+          setStatus(
+            <Message compact color='green'>
+              Active
+            </Message>
+          );
+        } else {
+          setStatus(
+            <Message compact color='red'>
+              Inactive
+            </Message>
+          );
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    if (props.paused) {
+      if (props.active) {
+        setStatus(
+          <Message compact color='yellow'>
+            Paused
+          </Message>
+        );
+      } else {
+        setStatus(
+          <Message compact color='yellow'>
+            Paused and Not Active
+          </Message>
+        );
+      }
+    } else {
+      if (props.active) {
+        setStatus(
+          <Message compact color='green'>
+            Active
+          </Message>
+        );
+      } else {
+        setStatus(
+          <Message compact color='red'>
+            Inactive
+          </Message>
+        );
       }
     }
   };
 
   const getContractStatus = async () => {
-    setBusy(true);
-    await updateContractStatus();
-    setBusy(false);
+    if (!busy) {
+      setStatus(
+        <Message compact color='yellow'>
+          <Icon name='sync alternate' loading />
+          Syncing Onchain Data
+        </Message>
+      );
+      setBusy(true);
+      await updateContractStatus(props.network ? props.network : 'MainNet');
+      setBusy(false);
+    }
   };
 
   function handleChange(event: any) {
@@ -165,13 +201,6 @@ export default function ClientStatus(props: ClientStatusProps) {
 
     setErrMsg('');
   }
-
-  const withTimeout = (millis: number, promise: Promise<any>) => {
-    const timeout = new Promise((resolve, reject) =>
-      setTimeout(() => reject(`Timed out after ${millis} ms.`), millis)
-    );
-    return Promise.race([promise, timeout]);
-  };
 
   const exchange = async () => {
     if (amount > BigInt(allowance)) {
@@ -270,17 +299,17 @@ export default function ClientStatus(props: ClientStatusProps) {
     const account = data.account;
     if (account && account.loggedIn) {
       props.setAddress(toHexAddress(account.address));
-      props.setNetwork(account.network ? account.network : 'TestNet');
+      props.setNetwork(account.network ? account.network : 'MainNet');
       props.setConnected(true);
       props.setError(false);
       props.setMessage('');
       props.setDebug([
         <Segment inverted key={'SegmentTokenBuyback'}>
           <ContractFunctions
-            network={account.network ? account.network : 'TestNet'}
+            network={account.network ? account.network : 'MainNet'}
             contract={'TokenBuyback'}
             address={getTokenBuybackAddress(
-              props.network ? props.network : 'TestNet'
+              props.network ? props.network : 'MainNet'
             )}
             abi={ABI.TokenBuyback}
             key={0}
@@ -288,10 +317,10 @@ export default function ClientStatus(props: ClientStatusProps) {
         </Segment>,
         <Segment inverted key={'SegmentAutoGovernor'}>
           <ContractFunctions
-            network={account.network ? account.network : 'TestNet'}
+            network={account.network ? account.network : 'MainNet'}
             contract={'AutoGovernor'}
             address={getAutoGovernorAddress(
-              props.network ? props.network : 'TestNet'
+              props.network ? props.network : 'MainNet'
             )}
             abi={ABI.AutoGovernor}
             key={1}
@@ -307,11 +336,12 @@ export default function ClientStatus(props: ClientStatusProps) {
   }
 
   React.useEffect(() => {
+    props.setup();
     getContractStatus();
     let interval: NodeJS.Timer | undefined = undefined;
     setTimeout(() => {
       interval = setInterval(() => {
-        updateContractStatus();
+        updateContractStatus(props.network ? props.network : 'MainNet');
       }, 60 * 1000);
     }, 60 * 1000);
 
@@ -380,7 +410,6 @@ export default function ClientStatus(props: ClientStatusProps) {
                 totalSupply={totalSupply}
                 rate={rate}
                 vault={vault}
-                network={props.network ? props.network : 'TestNet'}
                 active={props.active}
                 paused={props.paused}
                 locked={locked}
@@ -452,9 +481,9 @@ export default function ClientStatus(props: ClientStatusProps) {
                   </Grid.Column>
                   <Grid.Column stretched>
                     <ApproveEmbersModal
-                      network={props.network ? props.network : 'TestNet'}
+                      network={props.network ? props.network : 'MainNet'}
                       address={getTokenBuybackAddress(
-                        props.network ? props.network : 'TestNet'
+                        props.network ? props.network : 'MainNet'
                       )}
                       button={
                         <Button
@@ -462,12 +491,12 @@ export default function ClientStatus(props: ClientStatusProps) {
                           loading={
                             busy &&
                             getTokenBuybackAddress(
-                              props.network ? props.network : 'TestNet'
+                              props.network ? props.network : 'MainNet'
                             ).length <= 0
                           }
                           disabled={
                             getTokenBuybackAddress(
-                              props.network ? props.network : 'TestNet'
+                              props.network ? props.network : 'MainNet'
                             ).length <= 0
                           }
                           color='purple'

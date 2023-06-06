@@ -7,7 +7,6 @@ interface NetworkProps {
   locked: string;
   vault: string;
   busy: boolean;
-  network: NetworkType;
   active: boolean;
   paused: boolean;
   onlyHodlers: boolean;

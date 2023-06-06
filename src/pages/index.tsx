@@ -75,7 +75,7 @@ export default function Home() {
 
   React.useEffect(() => {
     setup();
-  }, [network]);
+  }, []);
 
   return (
     <>
@@ -143,6 +143,7 @@ export default function Home() {
                 <Grid.Row>
                   <Grid.Column width='8' stretched>
                     <ClientStatus
+                      setup={setup}
                       hodler={hodler}
                       setHodler={setHodler}
                       network={network}
