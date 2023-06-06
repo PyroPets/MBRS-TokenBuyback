@@ -15,6 +15,7 @@ export default class LocalProvider extends APIProvider {
   ): Promise<Result | undefined> {
     //console.log(contract, method);
     return await callContractRPC(
+      this.network,
       contract.startsWith('0x')
         ? contract.slice(2).toLowerCase()
         : contract.toLowerCase(),

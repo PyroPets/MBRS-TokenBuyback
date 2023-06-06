@@ -37,12 +37,12 @@ export default async function handler(
 
     switch (data.command) {
       case '*': {
+        const network: NetworkType = data.network;
         const contract: string = data.contract;
         const method: string = data.method;
         const _data: any[] = data.content;
         const abi: any[] = data.abi;
 
-        const network = process.env.NEXT_PUBLIC_APP_NETWORK as NetworkType;
         const mrpc: MetrixRPC.MetrixRPCNode = new MetrixRPC.MetrixRPCNode(
           null,
           RpcCredentials.uri(),
