@@ -327,7 +327,9 @@ export default function ClientStatus(props: ClientStatusProps) {
           />
         </Segment>,
       ]);
-      getClientStatus(account.address, account.network);
+      getClientStatus(account.address, account.network).then(() => {
+        getContractStatus();
+      });
     } else {
       props.setNetwork(undefined);
       props.setAddress(undefined);
@@ -341,7 +343,9 @@ export default function ClientStatus(props: ClientStatusProps) {
     let interval: NodeJS.Timer | undefined = undefined;
     setTimeout(() => {
       interval = setInterval(() => {
-        updateContractStatus(props.network ? props.network : 'MainNet');
+        if (props.network) {
+          updateContractStatus(props.network);
+        }
       }, 60 * 1000);
     }, 60 * 1000);
 
