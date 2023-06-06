@@ -11,13 +11,14 @@ import {
 import React from 'react';
 import styles from '@/styles/Home.module.css';
 import Footer from '@/components/Footer';
-import {APIProvider, NetworkType, Web3Provider} from '@metrixcoin/metrilib';
+import {APIProvider, NetworkType} from '@metrixcoin/metrilib';
 import AboutMBRSX from '@/components/AboutMBRSX';
 import ClientStatus from '@/components/ClientStatus';
 import DebugContracts from '@/components/DebugContracts';
 import {getTokenBuyback} from '@/buyback';
 import Web3TransactionModal from '@/modals/Web3TransactionModal';
 import {ZeroHash} from 'ethers';
+import HandleProviderType from '@/helpers/HandleProviderType';
 
 export default function Home() {
   const [debugging, setDebugging] = React.useState(false);
@@ -44,7 +45,7 @@ export default function Home() {
 
   const donate = async () => {
     if (network) {
-      const provider = new Web3Provider(network);
+      const provider = HandleProviderType(network);
       const buyback = getTokenBuyback(network, provider);
       const tx = await buyback.deposit();
       if (tx.txid && tx.txid != ZeroHash.replace('0x', '')) {

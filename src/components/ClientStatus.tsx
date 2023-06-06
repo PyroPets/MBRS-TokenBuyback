@@ -1,9 +1,7 @@
 import {
-  APIProvider,
   MRC20,
   MRC721,
   NetworkType,
-  Web3Provider,
 } from '@metrixcoin/metrilib';
 import {toHexAddress} from '@metrixcoin/metrilib/lib/utils/AddressUtils';
 import React from 'react';
@@ -28,9 +26,10 @@ import {
 import ABI from '@/abi';
 import ContractStatus from './ContractStatus';
 import ApproveEmbersModal from '../modals/ApproveEmbersModal';
-import {ZeroAddress, ZeroHash} from 'ethers';
+import {ZeroHash} from 'ethers';
 import Web3TransactionModal from '@/modals/Web3TransactionModal';
 import {parseFromIntString} from '@metrixcoin/metrilib/lib/utils/NumberUtils';
+import HandleProviderType from '@/helpers/HandleProviderType';
 
 interface ClientStatusProps {
   network: NetworkType | undefined;
@@ -79,7 +78,7 @@ export default function ClientStatus(props: ClientStatusProps) {
   );
 
   const getClientStatus = async (address: string, network: NetworkType) => {
-    const provider = new APIProvider(network);
+    const provider = HandleProviderType(network);
     if (props.pyro) {
       const pyro = new MRC721(props.pyro, provider);
       const hodler = (await pyro.balanceOf(toHexAddress(address))) > BigInt(0);
@@ -102,7 +101,7 @@ export default function ClientStatus(props: ClientStatusProps) {
   const updateContractStatus = async () => {
     if (props.network) {
       try {
-        const provider = new APIProvider(props.network);
+        const provider = HandleProviderType(props.network);
         const buyback = getTokenBuyback(props.network, provider);
         const isActive = await buyback.active();
         props.setActive(isActive);
@@ -195,9 +194,7 @@ export default function ClientStatus(props: ClientStatusProps) {
       props.setModalMessage(`Error: MBRS Amount must be greater than 0`);
       return;
     }
-    const provider = new Web3Provider(
-      props.network ? props.network : 'MainNet'
-    );
+    const provider = HandleProviderType(props.network ? props.network : 'MainNet');
     const buyback = getTokenBuyback(
       props.network ? props.network : 'MainNet',
       provider
