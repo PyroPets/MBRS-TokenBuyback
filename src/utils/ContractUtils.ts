@@ -60,6 +60,7 @@ const getAutoGovernorAddress = (
 /**
  * Read only call to contract using local RPC
  *
+ * @param network
  * @param contract
  * @param method
  * @param data
@@ -67,11 +68,13 @@ const getAutoGovernorAddress = (
  * @returns
  */
  const callContractRPC: (
+  network: string,
   contract: string,
   method: string,
   data: any[],
   abi: any[]
-) => Promise<Result | undefined> = async (
+ ) => Promise<Result | undefined> = async (
+  network: string,
   contract: string,
   method: string,
   data: any[],
@@ -96,7 +99,8 @@ const getAutoGovernorAddress = (
       contract,
       method,
       content: data,
-      abi
+      abi,
+      network,
     });
     if (result && !result.error) {
       return result;
