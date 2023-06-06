@@ -5,6 +5,7 @@ import {CONTRACTS} from '../constants';
 import {Result, ZeroAddress} from 'ethers';
 import TokenBuyback from '../buyback/TokenBuyback';
 import AutoGovernor from '../buyback/AutoGovernor';
+import { fetchWrapper } from '@/helpers/FetchWrapper';
 
 const getTokenBuyback = (
   network: NetworkType,
@@ -90,7 +91,7 @@ const getAutoGovernorAddress = (
       console.log(contract, method, data);
     }
 
-    const result = await axiosWrapper.post(s, {
+    const result = await fetchWrapper.post(s, {
       command,
       contract,
       method,
