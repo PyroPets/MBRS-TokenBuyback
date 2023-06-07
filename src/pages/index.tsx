@@ -65,8 +65,8 @@ export default function Home() {
   };
 
   const setup = async () => {
-    const provider = HandleProviderType(network ? network : "MainNet");
-    const buyback = getTokenBuyback(network ? network : "MainNet", provider);
+    const provider = HandleProviderType(network ? network : 'MainNet');
+    const buyback = getTokenBuyback(network ? network : 'MainNet', provider);
     setPYRO(await buyback.core());
     setMBRS(await buyback.token());
   };

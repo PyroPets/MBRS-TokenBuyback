@@ -28,7 +28,7 @@ import {parseFromIntString} from '@metrixcoin/metrilib/lib/utils/NumberUtils';
 import HandleProviderType from '@/helpers/HandleProviderType';
 
 interface ClientStatusProps {
-  setup(): void;
+  setup(): Promise<void>;
   network: NetworkType | undefined;
   setNetwork(network: NetworkType | undefined): void;
   connected: boolean;
@@ -74,24 +74,26 @@ export default function ClientStatus(props: ClientStatusProps) {
     ) as JSX.Element
   );
 
-  const getClientStatus = async (address: string, network: NetworkType) => {
-    const provider = HandleProviderType(network);
-    if (props.pyro) {
-      const pyro = new MRC721(props.pyro, provider);
-      const hodler = (await pyro.balanceOf(toHexAddress(address))) > BigInt(0);
-      props.setHodler(hodler);
-    }
-    if (props.mbrs) {
-      const token = new MRC20(props.mbrs, provider);
-      setBalance((await token.balanceOf(toHexAddress(address))).toString());
-      setAllowance(
-        (
-          await token.allowance(
-            toHexAddress(address),
-            getTokenBuybackAddress(network)
-          )
-        ).toString()
-      );
+  const getClientStatus = async () => {
+    if (props.network && props.address) {
+      const provider = HandleProviderType(props.network);
+      if (props.pyro) {
+        const pyro = new MRC721(props.pyro, provider);
+        const hodler = (await pyro.balanceOf(props.address)) > BigInt(0);
+        props.setHodler(hodler);
+      }
+      if (props.mbrs) {
+        const token = new MRC20(props.mbrs, provider);
+        setBalance((await token.balanceOf(props.address)).toString());
+        setAllowance(
+          (
+            await token.allowance(
+              props.address,
+              getTokenBuybackAddress(props.network)
+            )
+          ).toString()
+        );
+      }
     }
   };
 
@@ -181,7 +183,7 @@ export default function ClientStatus(props: ClientStatusProps) {
     }
   };
 
-  const getContractStatus = async () => {
+  const getContractStatus = async (network: NetworkType) => {
     if (!busy) {
       setStatus(
         <Message compact color='yellow'>
@@ -190,7 +192,7 @@ export default function ClientStatus(props: ClientStatusProps) {
         </Message>
       );
       setBusy(true);
-      await updateContractStatus(props.network ? props.network : 'MainNet');
+      await updateContractStatus(network);
       setBusy(false);
     }
   };
@@ -302,6 +304,7 @@ export default function ClientStatus(props: ClientStatusProps) {
       props.setNetwork(account.network ? account.network : 'MainNet');
       props.setConnected(true);
       props.setError(false);
+      props.setup();
       props.setMessage('');
       props.setDebug([
         <Segment inverted key={'SegmentTokenBuyback'}>
@@ -327,9 +330,9 @@ export default function ClientStatus(props: ClientStatusProps) {
           />
         </Segment>,
       ]);
-      getClientStatus(account.address, account.network).then(() => {
-        getContractStatus();
-      });
+
+      getClientStatus();
+      getContractStatus(account.network);
     } else {
       props.setNetwork(undefined);
       props.setAddress(undefined);
@@ -338,8 +341,9 @@ export default function ClientStatus(props: ClientStatusProps) {
   }
 
   React.useEffect(() => {
-    props.setup();
-    getContractStatus();
+    getClientStatus();
+
+    getContractStatus(props.network ? props.network : 'MainNet');
     let interval: NodeJS.Timer | undefined = undefined;
     setTimeout(() => {
       interval = setInterval(() => {
@@ -354,7 +358,7 @@ export default function ClientStatus(props: ClientStatusProps) {
         clearInterval(interval);
       }
     };
-  }, [props.network]);
+  }, [props.mbrs, props.pyro, props.network, props.address]);
 
   React.useEffect(() => {
     if (window) {
@@ -374,7 +378,6 @@ export default function ClientStatus(props: ClientStatusProps) {
       window.addEventListener('message', doHandleMessage, false);
       window.postMessage({message: {type: 'CONNECT_METRIMASK'}}, '*');
     }
-    props.setup();
   }, []);
   return (
     <Card
