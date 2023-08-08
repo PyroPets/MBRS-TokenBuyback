@@ -3,8 +3,7 @@ import {ethers} from 'ethers';
 import React from 'react';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 
-import {contracts as MainNet} from '@/network/MainNet/1.0.0';
-import {contracts as TestNet} from '@/network/TestNet/1.0.0';
+import {CONTRACTS} from '../constants';
 import Deployment from '@/interfaces/Deployment';
 
 interface ContractProps {
@@ -15,8 +14,8 @@ interface ContractProps {
 }
 
 const contracts: {MainNet: Deployment; TestNet: Deployment} = {
-  MainNet: MainNet,
-  TestNet: TestNet,
+  MainNet: CONTRACTS.latest.MainNet,
+  TestNet: CONTRACTS.latest.TestNet,
 };
 
 export default function ContractFunctions(props: ContractProps): JSX.Element {
