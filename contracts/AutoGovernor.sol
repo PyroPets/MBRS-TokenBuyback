@@ -16,11 +16,10 @@ contract AutoGovernor is Ownable {
             payable(owner()).call{value: msg.value}("");
         }
         if (msg.sender == governance) {
-            (uint256 blockHeight, , , , ) = Governance(governance).governors(
-                address(this)
-            );
-            if (blockHeight > 0) {
-                //&& block.number - lastPing >= 960 * 28
+            (uint256 blockHeight, uint256 lastPing, , , ) = Governance(
+                governance
+            ).governors(address(this));
+            if (blockHeight > 0 && block.number - lastPing >= 960 * 28) {
                 Governance(governance).ping();
             }
         }
@@ -31,9 +30,9 @@ contract AutoGovernor is Ownable {
             payable(owner()).call{value: msg.value}("");
         }
         if (msg.sender == governance) {
-            (uint256 blockHeight, uint256 lastPing, , , ) = Governance(governance).governors(
-                address(this)
-            );
+            (uint256 blockHeight, uint256 lastPing, , , ) = Governance(
+                governance
+            ).governors(address(this));
             if (blockHeight > 0 && block.number - lastPing >= 960 * 28) {
                 Governance(governance).ping();
             }

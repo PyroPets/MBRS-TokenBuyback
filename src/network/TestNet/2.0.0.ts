@@ -1,6 +1,6 @@
 import Deployment from '../../interfaces/Deployment';
 
 export const contracts: Deployment = {
-  TokenBuyback: 'f24801efb9b65fa8afe91236a1dd622da98bf0b6',
-  AutoGovernor: 'd7ba5b744b9d8ad2142aedd997a3d2c8f673101b',
+  TokenBuyback: '6f2134df9cb400da04e90f80bd637397f5916a75',
+  AutoGovernor: '7b5befaef62fc80b0e9a30c03431d392a7297137',
 };
